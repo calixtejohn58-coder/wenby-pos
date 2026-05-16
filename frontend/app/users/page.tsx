@@ -73,7 +73,7 @@ export default function UsersPage() {
     try {
       const response =
         await axios.get(
-          'http://localhost:3000/users',
+          'http://${process.env.NEXT_PUBLIC_API_URL}/users',
         );
 
       setUsers(
@@ -88,7 +88,7 @@ export default function UsersPage() {
     async () => {
       try {
         await axios.post(
-          'http://localhost:3000/users',
+          'http://${process.env.NEXT_PUBLIC_API_URL}/users',
           {
             fullName,
 
@@ -114,7 +114,7 @@ export default function UsersPage() {
     async (id: string) => {
       try {
         await axios.delete(
-          `http://localhost:3000/users/${id}`,
+          `http://${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
         );
 
         fetchUsers();

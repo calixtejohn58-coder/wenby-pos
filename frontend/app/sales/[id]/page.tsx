@@ -53,7 +53,7 @@ export default function SaleDetailsPage({
         localStorage.getItem('token');
 
       const response = await axios.get(
-        `http://localhost:3000/sales/${params.id}`,
+        `http://${process.env.NEXT_PUBLIC_API_URL}/sales/${params.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

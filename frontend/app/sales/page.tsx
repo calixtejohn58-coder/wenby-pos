@@ -68,7 +68,7 @@ export default function SalesPage() {
         const response =
           await axios.get(
 
-            'http://localhost:3000/sales',
+            'http://${process.env.NEXT_PUBLIC_API_URL}/sales',
 
             {
               headers: {

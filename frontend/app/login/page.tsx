@@ -13,7 +13,7 @@ export default function LoginPage() {
   const login = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:3000/auth/login',
+        'http://${process.env.NEXT_PUBLIC_API_URL}/auth/login',
         {
           email,
           password,
