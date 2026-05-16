@@ -7,33 +7,61 @@ import {
 } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
 
-  // Enable CORS
+  const app =
+    await NestFactory.create(
+      AppModule,
+    );
+
   app.enableCors({
-    origin: '*',
+
+    origin: true,
+
     credentials: true,
+
+    methods:
+      'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+
+    allowedHeaders:
+      'Content-Type, Accept, Authorization',
   });
 
-  // Swagger Config
-  const config = new DocumentBuilder()
-    .setTitle('Wenby POS API')
-    .setDescription('POS Backend API')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+  const config =
+    new DocumentBuilder()
 
-  const document = SwaggerModule.createDocument(
+      .setTitle(
+        'Wenby POS API',
+      )
+
+      .setDescription(
+        'POS Backend API',
+      )
+
+      .setVersion('1.0')
+
+      .addBearerAuth()
+
+      .build();
+
+  const document =
+    SwaggerModule.createDocument(
+      app,
+      config,
+    );
+
+  SwaggerModule.setup(
+    'api',
     app,
-    config,
+    document,
   );
 
-  SwaggerModule.setup('api', app, document);
+  await app.listen(
+    process.env.PORT || 3000,
+  );
 
-  // Start Server
-  await app.listen(process.env.PORT || 3000);
-
-  console.log('Backend running');
+  console.log(
+    'Backend running',
+  );
 }
 
 bootstrap();
