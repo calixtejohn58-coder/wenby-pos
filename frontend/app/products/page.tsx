@@ -1,9 +1,7 @@
 'use client';
 
 import axios from 'axios';
-
 import Link from 'next/link';
-
 import Barcode from 'react-barcode';
 
 import {
@@ -23,7 +21,12 @@ interface Product {
   barcode?: string;
 }
 
+const API_URL =
+  process.env
+    .NEXT_PUBLIC_API_URL;
+
 export default function ProductsPage() {
+
   const [products, setProducts] =
     useState<Product[]>([]);
 
@@ -48,30 +51,45 @@ export default function ProductsPage() {
     );
 
   useEffect(() => {
+
     fetchProducts();
+
   }, []);
 
-  const fetchProducts = async () => {
-    try {
-      const response =
-        await axios.get(
-          'http://localhost:3000/products',
+  // FETCH PRODUCTS
+  const fetchProducts =
+    async () => {
+
+      try {
+
+        const response =
+          await axios.get(
+            `${API_URL}/products`,
+          );
+
+        setProducts(
+          response.data,
         );
 
-      setProducts(
-        response.data,
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
+      } catch (error) {
 
+        console.log(error);
+
+      }
+    };
+
+  // EDIT
   const editProduct = (
     product: Product,
   ) => {
-    setEditingId(product.id);
 
-    setName(product.name);
+    setEditingId(
+      product.id,
+    );
+
+    setName(
+      product.name,
+    );
 
     setPrice(
       product.price.toString(),
@@ -86,13 +104,20 @@ export default function ProductsPage() {
     );
   };
 
+  // CREATE / UPDATE
   const createProduct =
     async () => {
+
       try {
+
         if (editingId) {
+
           await axios.patch(
-            `http://localhost:3000/products/${editingId}`,
+
+            `${API_URL}/products/${editingId}`,
+
             {
+
               name,
 
               price:
@@ -106,10 +131,15 @@ export default function ProductsPage() {
           );
 
           setEditingId(null);
+
         } else {
+
           await axios.post(
-            'http://localhost:3000/products',
+
+            `${API_URL}/products`,
+
             {
+
               name,
 
               price:
@@ -124,32 +154,44 @@ export default function ProductsPage() {
         }
 
         setName('');
+
         setPrice('');
+
         setStock('');
+
         setBarcode('');
 
         fetchProducts();
+
       } catch (error) {
+
         console.log(error);
       }
     };
 
+  // DELETE
   const deleteProduct =
     async (id: string) => {
+
       try {
+
         await axios.delete(
-          `http://localhost:3000/products/${id}`,
+          `${API_URL}/products/${id}`,
         );
 
         fetchProducts();
+
       } catch (error) {
+
         console.log(error);
       }
     };
 
+  // FILTER
   const filteredProducts =
     products.filter(
       (product) =>
+
         product.name
           .toLowerCase()
           .includes(
@@ -158,11 +200,12 @@ export default function ProductsPage() {
     );
 
   return (
+
     <main className="min-h-screen bg-black text-white">
 
       <div className="flex">
 
-        {/* Sidebar */}
+        {/* SIDEBAR */}
         <aside className="w-64 bg-zinc-950 border-r border-zinc-800 min-h-screen p-5">
 
           <h1 className="text-4xl font-black mb-10">
@@ -172,43 +215,63 @@ export default function ProductsPage() {
           <nav className="space-y-4">
 
             <Link href="/dashboard">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 Tableau de bord
+
               </button>
+
             </Link>
 
             <Link href="/products">
+
               <button className="w-full text-left bg-white text-black p-4 rounded-2xl font-bold">
+
                 Produits
+
               </button>
+
             </Link>
 
             <Link href="/pos">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 POS
+
               </button>
+
             </Link>
 
             <Link href="/sales">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 Ventes
+
               </button>
+
             </Link>
 
             <Link href="/users">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 Utilisateurs
+
               </button>
+
             </Link>
 
           </nav>
 
         </aside>
 
-        {/* Content */}
+        {/* CONTENT */}
         <section className="flex-1 p-10">
 
-          {/* Header */}
+          {/* HEADER */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-sm mb-8">
 
             <h1 className="text-5xl font-black mb-3">
@@ -221,7 +284,7 @@ export default function ProductsPage() {
 
           </div>
 
-          {/* Add Product */}
+          {/* ADD PRODUCT */}
           <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl shadow-sm mb-8">
 
             <h2 className="text-3xl font-bold mb-6">
@@ -288,14 +351,16 @@ export default function ProductsPage() {
               onClick={createProduct}
               className="mt-6 bg-white text-black px-8 py-4 rounded-2xl text-lg font-black"
             >
+
               {editingId
                 ? 'Mettre à jour'
                 : 'Ajouter Produit'}
+
             </button>
 
           </div>
 
-          {/* Search */}
+          {/* SEARCH */}
           <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl shadow-sm mb-8">
 
             <input
@@ -312,11 +377,12 @@ export default function ProductsPage() {
 
           </div>
 
-          {/* Products Grid */}
+          {/* PRODUCTS */}
           <div className="grid grid-cols-3 gap-6">
 
             {filteredProducts.map(
               (product) => (
+
                 <div
                   key={product.id}
                   className={`p-6 rounded-3xl border ${
@@ -327,24 +393,31 @@ export default function ProductsPage() {
                 >
 
                   <h3 className="text-3xl font-black mb-3">
+
                     {product.name}
+
                   </h3>
 
                   <p className="text-zinc-400 mb-2">
+
                     Stock:
                     {' '}
                     {product.stock}
+
                   </p>
 
                   {product.barcode && (
+
                     <p className="text-zinc-400 mb-3">
+
                       Code barre:
                       {' '}
                       {product.barcode}
+
                     </p>
                   )}
 
-                  {/* Barcode */}
+                  {/* BARCODE */}
                   <div className="mt-4 bg-white p-3 rounded-xl flex justify-center">
 
                     <Barcode
@@ -360,13 +433,19 @@ export default function ProductsPage() {
                   </div>
 
                   {product.stock <= 5 && (
+
                     <p className="text-red-400 font-bold mt-4 mb-4">
+
                       Stock faible
+
                     </p>
                   )}
 
                   <p className="text-4xl font-black mb-5">
-                    ${product.price}
+
+                    $
+                    {product.price}
+
                   </p>
 
                   <div className="flex flex-wrap gap-3">
@@ -379,7 +458,9 @@ export default function ProductsPage() {
                       }
                       className="bg-white text-black px-5 py-3 rounded-2xl font-bold"
                     >
+
                       Modifier
+
                     </button>
 
                     <button
@@ -390,7 +471,9 @@ export default function ProductsPage() {
                       }
                       className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
                     >
+
                       Supprimer
+
                     </button>
 
                     <button
@@ -399,7 +482,9 @@ export default function ProductsPage() {
                       }
                       className="bg-zinc-700 px-5 py-3 rounded-2xl font-bold"
                     >
+
                       Imprimer Barcode
+
                     </button>
 
                   </div>
