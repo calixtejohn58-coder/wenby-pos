@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-
 import { AppModule } from './app.module';
 
 import {
@@ -12,7 +11,7 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: 'http://localhost:3001',
+    origin: '*',
     credentials: true,
   });
 
@@ -32,11 +31,9 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   // Start Server
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 
-  console.log(
-    'Backend running on http://localhost:3000',
-  );
+  console.log('Backend running');
 }
 
 bootstrap();
