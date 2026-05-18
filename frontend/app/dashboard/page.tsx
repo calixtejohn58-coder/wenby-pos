@@ -56,6 +56,10 @@ export default function DashboardPage() {
   const [date, setDate] =
     useState('');
 
+  const API_URL =
+    process.env
+      .NEXT_PUBLIC_API_URL;
+
   // CLOCK
   useEffect(() => {
 
@@ -118,7 +122,7 @@ export default function DashboardPage() {
 
         const response =
           await axios.get(
-            'http://${process.env.NEXT_PUBLIC_API_URL}/products',
+            `${API_URL}/products`,
           );
 
         setProducts(
@@ -140,7 +144,7 @@ export default function DashboardPage() {
 
         const response =
           await axios.get(
-            'http://${process.env.NEXT_PUBLIC_API_URL}/sales',
+            `${API_URL}/sales`,
           );
 
         setSales(
@@ -358,38 +362,6 @@ export default function DashboardPage() {
                   <p className="text-zinc-400 mt-3">
                     Smart POS • Inventory • Analytics • Sales Management
                   </p>
-
-                  {/* THEMES */}
-                  <div className="flex flex-wrap gap-3 mt-6">
-
-                    <button
-                      onClick={() =>
-                        setTheme('cyan')
-                      }
-                      className="bg-cyan-500 px-4 py-2 rounded-2xl font-bold"
-                    >
-                      Cyber Blue
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        setTheme('purple')
-                      }
-                      className="bg-purple-500 px-4 py-2 rounded-2xl font-bold"
-                    >
-                      Purple Tech
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        setTheme('light')
-                      }
-                      className="bg-white text-black px-4 py-2 rounded-2xl font-bold"
-                    >
-                      Light
-                    </button>
-
-                  </div>
 
                 </div>
 
