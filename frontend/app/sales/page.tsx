@@ -1,7 +1,6 @@
 'use client';
 
 import axios from 'axios';
-
 import Link from 'next/link';
 
 import {
@@ -9,118 +8,172 @@ import {
   useState,
 } from 'react';
 
-interface SaleItem {
+interface User {
   id: string;
 
-  quantity: number;
+  fullName: string;
 
-  price: number;
+  email: string;
 
-  product?: {
-    name: string;
-  };
+  role: string;
 }
 
-interface Sale {
-  id: string;
+export default function UsersPage() {
 
-  total: number;
+  const [users, setUsers] =
+    useState<User[]>([]);
 
-  createdAt: string;
-
-  cashier?: {
-    fullName: string;
-
-    role: string;
-  };
-
-  items?: SaleItem[];
-}
-
-export default function SalesPage() {
-
-  const [sales, setSales] =
-    useState<Sale[]>([]);
-
-  const [search, setSearch] =
+  const [fullName, setFullName] =
     useState('');
 
-  const [darkMode, setDarkMode] =
+  const [email, setEmail] =
+    useState('');
+
+  const [password, setPassword] =
+    useState('');
+
+  const [role, setRole] =
+    useState('CASHIER');
+
+  const [loading, setLoading] =
     useState(true);
 
   useEffect(() => {
 
-    fetchSales();
+    const user =
+      localStorage.getItem(
+        'user',
+      );
+
+    if (!user) {
+
+      window.location.href =
+        '/';
+
+      return;
+    }
+
+    const parsedUser =
+      JSON.parse(user);
+
+    if (
+      parsedUser.role !==
+      'ADMIN'
+    ) {
+
+      window.location.href =
+        '/dashboard';
+
+      return;
+    }
+
+    fetchUsers();
+
+    setLoading(false);
 
   }, []);
 
-  // FETCH SALES
-  const fetchSales =
+  // FETCH USERS
+  const fetchUsers =
     async () => {
 
       try {
 
-        const token =
-          localStorage.getItem(
-            'token',
-          );
-
         const response =
           await axios.get(
 
-            `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`
-
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${token}`,
-              },
-            },
+            `${process.env.NEXT_PUBLIC_API_URL}/users`,
           );
 
-        setSales(
+        setUsers(
           response.data,
         );
 
       } catch (error) {
 
         console.log(error);
-
       }
     };
 
-  // FILTER SALES
-  const filteredSales =
-    sales.filter(
-      (sale) =>
-        sale.cashier?.fullName
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase(),
-          ),
-    );
+  // CREATE USER
+  const createUser =
+    async () => {
 
-  // TOTAL REVENUE
-  const totalRevenue =
-    filteredSales.reduce(
-      (sum, sale) =>
-        sum + sale.total,
-      0,
+      try {
+
+        await axios.post(
+
+          `${process.env.NEXT_PUBLIC_API_URL}/users`,
+
+          {
+
+            fullName,
+
+            email,
+
+            password,
+
+            role,
+          },
+        );
+
+        setFullName('');
+
+        setEmail('');
+
+        setPassword('');
+
+        setRole('CASHIER');
+
+        fetchUsers();
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
+  // DELETE USER
+  const deleteUser =
+    async (id: string) => {
+
+      try {
+
+        await axios.delete(
+
+          `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
+        );
+
+        fetchUsers();
+
+      } catch (error) {
+
+        console.log(error);
+      }
+    };
+
+  if (loading) {
+
+    return (
+
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+
+        <h1 className="text-4xl font-black">
+          Chargement...
+        </h1>
+
+      </main>
     );
+  }
 
   return (
-    <main
-      className={`min-h-screen ${
-        darkMode
-          ? 'bg-black text-white'
-          : 'bg-zinc-100 text-black'
-      }`}
-    >
+
+    <main className="min-h-screen bg-black text-white">
 
       <div className="flex flex-col xl:flex-row">
 
         {/* SIDEBAR */}
-        <aside className="w-full xl:w-64 bg-zinc-950 border-r border-zinc-800 text-white min-h-screen p-5">
+        <aside className="w-full xl:w-64 bg-zinc-950 border-r border-zinc-800 min-h-screen p-5">
 
           <h1 className="text-4xl font-black mb-10">
             Wenby POS
@@ -129,33 +182,53 @@ export default function SalesPage() {
           <nav className="space-y-4">
 
             <Link href="/dashboard">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 Tableau de bord
+
               </button>
+
             </Link>
 
             <Link href="/products">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 Produits
+
               </button>
+
             </Link>
 
             <Link href="/pos">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 POS
+
               </button>
+
             </Link>
 
             <Link href="/sales">
-              <button className="w-full text-left bg-white text-black p-4 rounded-2xl font-bold">
+
+              <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 Ventes
+
               </button>
+
             </Link>
 
             <Link href="/users">
-              <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
+              <button className="w-full text-left bg-white text-black p-4 rounded-2xl font-bold">
+
                 Utilisateurs
+
               </button>
+
             </Link>
 
           </nav>
@@ -166,163 +239,137 @@ export default function SalesPage() {
         <section className="flex-1 p-4 md:p-10">
 
           {/* HEADER */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-sm mb-8">
+          <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl mb-8">
 
-            <div className="flex flex-col md:flex-row justify-between md:items-center gap-5">
+            <h1 className="text-5xl font-black mb-3">
+              Gestion Utilisateurs
+            </h1>
 
-              <div>
-
-                <h1 className="text-3xl md:text-5xl font-black mb-3 text-white">
-                  Historique des ventes
-                </h1>
-
-                <p className="text-zinc-400">
-                  Toutes les ventes enregistrées
-                </p>
-
-              </div>
-
-              <button
-                onClick={() =>
-                  setDarkMode(
-                    !darkMode,
-                  )
-                }
-                className="bg-zinc-800 text-white px-5 py-3 rounded-2xl font-bold"
-              >
-                {darkMode
-                  ? 'Mode Clair'
-                  : 'Mode Sombre'}
-              </button>
-
-            </div>
-
-          </div>
-
-          {/* SEARCH */}
-          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl shadow-sm mb-8">
-
-            <input
-              type="text"
-              placeholder="Rechercher par caissier..."
-              value={search}
-              onChange={(e) =>
-                setSearch(
-                  e.target.value,
-                )
-              }
-              className="w-full bg-zinc-800 border border-zinc-700 p-5 rounded-2xl text-white"
-            />
-
-          </div>
-
-          {/* TOTAL */}
-          <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl shadow-sm mb-8">
-
-            <h2 className="text-zinc-400 mb-3">
-              Revenus Totals
-            </h2>
-
-            <p className="text-5xl font-black">
-              ${totalRevenue}
+            <p className="text-zinc-400">
+              Gérez admins et caissiers
             </p>
 
           </div>
 
-          {/* SALES */}
-          <div className="space-y-6">
+          {/* CREATE USER */}
+          <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl mb-8">
 
-            {filteredSales.map(
-              (sale) => (
+            <h2 className="text-3xl font-black mb-6">
+              Créer Utilisateur
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+
+              <input
+                type="text"
+                placeholder="Nom complet"
+                value={fullName}
+                onChange={(e) =>
+                  setFullName(
+                    e.target.value,
+                  )
+                }
+                className="bg-zinc-800 border border-zinc-700 p-4 rounded-2xl"
+              />
+
+              <input
+                type="email"
+                placeholder="Adresse email"
+                value={email}
+                onChange={(e) =>
+                  setEmail(
+                    e.target.value,
+                  )
+                }
+                className="bg-zinc-800 border border-zinc-700 p-4 rounded-2xl"
+              />
+
+              <input
+                type="password"
+                placeholder="Mot de passe"
+                value={password}
+                onChange={(e) =>
+                  setPassword(
+                    e.target.value,
+                  )
+                }
+                className="bg-zinc-800 border border-zinc-700 p-4 rounded-2xl"
+              />
+
+              <select
+                value={role}
+                onChange={(e) =>
+                  setRole(
+                    e.target.value,
+                  )
+                }
+                className="bg-zinc-800 border border-zinc-700 p-4 rounded-2xl"
+              >
+
+                <option value="ADMIN">
+                  ADMIN
+                </option>
+
+                <option value="CASHIER">
+                  CAISSIER
+                </option>
+
+              </select>
+
+            </div>
+
+            <button
+              onClick={createUser}
+              className="mt-6 bg-white text-black px-8 py-4 rounded-2xl text-lg font-black"
+            >
+
+              Créer Utilisateur
+
+            </button>
+
+          </div>
+
+          {/* USERS */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+            {users.map(
+              (user) => (
 
                 <div
-                  key={sale.id}
+                  key={user.id}
                   className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl"
                 >
 
-                  <div className="flex flex-col xl:flex-row justify-between xl:items-center gap-4 mb-6">
+                  <h2 className="text-3xl font-black mb-2">
 
-                    <div>
+                    {user.fullName}
 
-                      <p className="text-2xl font-black">
+                  </h2>
 
-                        {sale.cashier?.fullName}
+                  <p className="text-zinc-400 mb-2">
 
-                      </p>
+                    {user.email}
 
-                      <p className="text-zinc-400">
+                  </p>
 
-                        {new Date(
-                          sale.createdAt,
-                        ).toLocaleString()}
+                  <p className="uppercase text-sm text-zinc-500 mb-5">
 
-                      </p>
+                    {user.role}
 
-                      <p className="text-zinc-500 uppercase text-sm mt-1">
+                  </p>
 
-                        {sale.cashier?.role}
+                  <button
+                    onClick={() =>
+                      deleteUser(
+                        user.id,
+                      )
+                    }
+                    className="bg-red-500 hover:bg-red-600 transition px-5 py-3 rounded-2xl font-bold"
+                  >
 
-                      </p>
+                    Supprimer
 
-                    </div>
-
-                    <div className="xl:text-right">
-
-                      <p className="text-4xl font-black">
-
-                        ${sale.total}
-
-                      </p>
-
-                      <button
-                        onClick={() =>
-                          window.print()
-                        }
-                        className="mt-3 bg-white text-black px-5 py-2 rounded-xl font-bold"
-                      >
-
-                        Imprimer
-
-                      </button>
-
-                    </div>
-
-                  </div>
-
-                  {/* PRODUCTS */}
-                  <div className="space-y-3">
-
-                    {sale.items?.map(
-                      (item) => (
-
-                        <div
-                          key={item.id}
-                          className="bg-zinc-800 p-4 rounded-2xl flex justify-between items-center"
-                        >
-
-                          <p className="font-bold">
-
-                            {item.product?.name}
-                            {' '}
-                            x
-                            {' '}
-                            {item.quantity}
-
-                          </p>
-
-                          <p className="font-black">
-
-                            $
-                            {item.price *
-                              item.quantity}
-
-                          </p>
-
-                        </div>
-                      ),
-                    )}
-
-                  </div>
+                  </button>
 
                 </div>
               ),
