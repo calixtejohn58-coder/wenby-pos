@@ -1,7 +1,6 @@
 'use client';
 
 import axios from 'axios';
-
 import Link from 'next/link';
 
 import {
@@ -11,15 +10,13 @@ import {
 
 interface User {
   id: string;
-
   fullName: string;
-
   email: string;
-
   role: string;
 }
 
 export default function UsersPage() {
+
   const [users, setUsers] =
     useState<User[]>([]);
 
@@ -39,12 +36,14 @@ export default function UsersPage() {
     useState(true);
 
   useEffect(() => {
+
     const user =
       localStorage.getItem(
         'user',
       );
 
     if (!user) {
+
       window.location.href =
         '/';
 
@@ -58,6 +57,7 @@ export default function UsersPage() {
       parsedUser.role !==
       'ADMIN'
     ) {
+
       window.location.href =
         '/dashboard';
 
@@ -67,35 +67,45 @@ export default function UsersPage() {
     fetchUsers();
 
     setLoading(false);
+
   }, []);
 
-  const fetchUsers = async () => {
-    try {
-      const response =
-        await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`
+  // FETCH USERS
+  const fetchUsers =
+    async () => {
+
+      try {
+
+        const response =
+          await axios.get(
+
+            `${process.env.NEXT_PUBLIC_API_URL}/users`,
+          );
+
+        setUsers(
+          response.data,
         );
 
-      setUsers(
-        response.data,
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
+      } catch (error) {
 
+        console.log(error);
+      }
+    };
+
+  // CREATE USER
   const createUser =
     async () => {
+
       try {
+
         await axios.post(
-          'http://${process.env.NEXT_PUBLIC_API_URL}/users',
+
+          `${process.env.NEXT_PUBLIC_API_URL}/users`,
+
           {
             fullName,
-
             email,
-
             password,
-
             role,
           },
         );
@@ -103,28 +113,39 @@ export default function UsersPage() {
         setFullName('');
         setEmail('');
         setPassword('');
+        setRole('CASHIER');
 
         fetchUsers();
+
       } catch (error) {
+
         console.log(error);
       }
     };
 
+  // DELETE USER
   const deleteUser =
     async (id: string) => {
+
       try {
+
         await axios.delete(
-          `http://${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
+
+          `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
         );
 
         fetchUsers();
+
       } catch (error) {
+
         console.log(error);
       }
     };
 
   if (loading) {
+
     return (
+
       <main className="min-h-screen bg-black text-white flex items-center justify-center">
 
         <h1 className="text-4xl font-black">
@@ -136,12 +157,13 @@ export default function UsersPage() {
   }
 
   return (
+
     <main className="min-h-screen bg-black text-white">
 
-      <div className="flex">
+      <div className="flex flex-col xl:flex-row">
 
-        {/* Sidebar */}
-        <aside className="w-64 bg-zinc-950 border-r border-zinc-800 min-h-screen p-5">
+        {/* SIDEBAR */}
+        <aside className="w-full xl:w-64 bg-zinc-950 border-r border-zinc-800 min-h-screen p-5">
 
           <h1 className="text-4xl font-black mb-10">
             Wenby POS
@@ -150,43 +172,63 @@ export default function UsersPage() {
           <nav className="space-y-4">
 
             <Link href="/dashboard">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 Tableau de bord
+
               </button>
+
             </Link>
 
             <Link href="/products">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 Produits
+
               </button>
+
             </Link>
 
             <Link href="/pos">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 POS
+
               </button>
+
             </Link>
 
             <Link href="/sales">
+
               <button className="w-full text-left bg-zinc-900 hover:bg-zinc-800 p-4 rounded-2xl">
+
                 Ventes
+
               </button>
+
             </Link>
 
             <Link href="/users">
+
               <button className="w-full text-left bg-white text-black p-4 rounded-2xl font-bold">
+
                 Utilisateurs
+
               </button>
+
             </Link>
 
           </nav>
 
         </aside>
 
-        {/* Content */}
-        <section className="flex-1 p-10">
+        {/* CONTENT */}
+        <section className="flex-1 p-4 md:p-10">
 
-          {/* Header */}
+          {/* HEADER */}
           <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl mb-8">
 
             <h1 className="text-5xl font-black mb-3">
@@ -199,14 +241,14 @@ export default function UsersPage() {
 
           </div>
 
-          {/* Add User */}
+          {/* CREATE USER */}
           <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl mb-8">
 
             <h2 className="text-3xl font-black mb-6">
               Créer Utilisateur
             </h2>
 
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
 
               <input
                 type="text"
@@ -270,31 +312,40 @@ export default function UsersPage() {
               onClick={createUser}
               className="mt-6 bg-white text-black px-8 py-4 rounded-2xl text-lg font-black"
             >
+
               Créer Utilisateur
+
             </button>
 
           </div>
 
-          {/* Users List */}
-          <div className="grid grid-cols-3 gap-6">
+          {/* USERS */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
             {users.map(
               (user) => (
+
                 <div
                   key={user.id}
                   className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl"
                 >
 
                   <h2 className="text-3xl font-black mb-2">
+
                     {user.fullName}
+
                   </h2>
 
                   <p className="text-zinc-400 mb-2">
+
                     {user.email}
+
                   </p>
 
                   <p className="uppercase text-sm text-zinc-500 mb-5">
+
                     {user.role}
+
                   </p>
 
                   <button
@@ -303,9 +354,11 @@ export default function UsersPage() {
                         user.id,
                       )
                     }
-                    className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
+                    className="bg-red-500 hover:bg-red-600 transition px-5 py-3 rounded-2xl font-bold"
                   >
+
                     Supprimer
+
                   </button>
 
                 </div>
