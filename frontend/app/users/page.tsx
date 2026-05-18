@@ -73,7 +73,7 @@ export default function UsersPage() {
     try {
       const response =
         await axios.get(
-          'http://${process.env.NEXT_PUBLIC_API_URL}/users',
+          `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`
         );
 
       setUsers(
