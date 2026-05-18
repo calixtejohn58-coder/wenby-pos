@@ -91,7 +91,7 @@ export default function PosPage() {
 
         const response =
           await axios.get(
-            'http://${process.env.NEXT_PUBLIC_API_URL}/products',
+            `${process.env.NEXT_PUBLIC_API_URL}/products`,
           );
 
         setProducts(
@@ -218,7 +218,7 @@ export default function PosPage() {
 
         await axios.post(
 
-          'http://${process.env.NEXT_PUBLIC_API_URL}/sales',
+          `${process.env.NEXT_PUBLIC_API_URL}/sales`,
 
           {
 
