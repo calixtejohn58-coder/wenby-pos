@@ -1,12 +1,14 @@
 'use client';
 
 import axios from 'axios';
-
 import Link from 'next/link';
 
-import { useState } from 'react';
+import {
+  useState,
+} from 'react';
 
 export default function RegisterPage() {
+
   const [fullName, setFullName] =
     useState('');
 
@@ -16,93 +18,123 @@ export default function RegisterPage() {
   const [password, setPassword] =
     useState('');
 
-  const register = async () => {
-    try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`
-        {
-          fullName,
-          email,
-          password,
-        },
-      );
+  const [loading, setLoading] =
+    useState(false);
 
-      alert(
-        'Account created successfully',
-      );
+  const register =
+    async () => {
 
-      window.location.href =
-        '/';
+      try {
 
-    } catch (error) {
-      console.log(error);
+        setLoading(true);
 
-      alert('Register failed');
-    }
-  };
+        await axios.post(
+
+          `${process.env.NEXT_PUBLIC_API_URL}/users`,
+
+          {
+            fullName,
+            email,
+            password,
+          },
+        );
+
+        alert(
+          'Utilisateur créé avec succès',
+        );
+
+        window.location.href =
+          '/';
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          'Erreur lors de la création',
+        );
+
+      } finally {
+
+        setLoading(false);
+      }
+    };
 
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center p-10">
 
-      <div className="bg-zinc-900 border border-zinc-800 p-12 rounded-3xl w-full max-w-xl">
+    <main className="min-h-screen bg-black text-white flex items-center justify-center p-5">
 
-        <h1 className="text-6xl font-black mb-4 text-center">
-          Create Account
+      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-10 w-full max-w-lg">
+
+        <h1 className="text-5xl font-black mb-3 text-center">
+          Wenby POS
         </h1>
 
-        <p className="text-zinc-400 text-center text-lg mb-10">
-          Wenby POS Register
+        <p className="text-zinc-400 text-center mb-10">
+          Création utilisateur
         </p>
 
         <div className="space-y-5">
 
           <input
             type="text"
-            placeholder="Full Name"
+            placeholder="Nom complet"
             value={fullName}
             onChange={(e) =>
               setFullName(
                 e.target.value,
               )
             }
-            className="w-full bg-zinc-800 border border-zinc-700 p-5 rounded-2xl text-white"
+            className="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-2xl outline-none"
           />
 
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Adresse email"
             value={email}
             onChange={(e) =>
               setEmail(
                 e.target.value,
               )
             }
-            className="w-full bg-zinc-800 border border-zinc-700 p-5 rounded-2xl text-white"
+            className="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-2xl outline-none"
           />
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Mot de passe"
             value={password}
             onChange={(e) =>
               setPassword(
                 e.target.value,
               )
             }
-            className="w-full bg-zinc-800 border border-zinc-700 p-5 rounded-2xl text-white"
+            className="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-2xl outline-none"
           />
 
           <button
             onClick={register}
-            className="w-full bg-white text-black py-5 rounded-2xl text-2xl font-black"
+            disabled={loading}
+            className="w-full bg-white text-black py-4 rounded-2xl font-black text-lg hover:scale-[1.02] transition"
           >
-            Register
+
+            {loading
+              ? 'Chargement...'
+              : 'Créer utilisateur'}
+
           </button>
 
-          <Link href="/">
-            <button className="w-full bg-zinc-800 py-5 rounded-2xl text-xl font-bold">
-              Back To Login
-            </button>
+        </div>
+
+        <div className="mt-8 text-center">
+
+          <Link
+            href="/"
+            className="text-zinc-400 hover:text-white transition"
+          >
+
+            Retour connexion
+
           </Link>
 
         </div>
