@@ -1,4 +1,4 @@
-import {
+ import {
   Body,
   Controller,
   Delete,
@@ -16,13 +16,17 @@ from './products.service';
 export class ProductsController {
 
   constructor(
-    private readonly productsService: ProductsService,
+
+    private readonly productsService:
+      ProductsService,
   ) {}
 
+  // CREATE PRODUCT
   @Post()
 
   create(
-    @Body() body: any,
+    @Body()
+    body: any,
   ) {
 
     return this.productsService.create(
@@ -30,17 +34,22 @@ export class ProductsController {
     );
   }
 
+  // GET PRODUCTS
   @Get()
 
   findAll() {
 
-    return this.productsService.findAll();
+    return this.productsService.findAll(
+      '',
+    );
   }
 
+  // GET ONE PRODUCT
   @Get(':id')
 
   findOne(
-    @Param('id') id: string,
+    @Param('id')
+    id: string,
   ) {
 
     return this.productsService.findOne(
@@ -48,6 +57,7 @@ export class ProductsController {
     );
   }
 
+  // UPDATE PRODUCT
   @Put(':id')
 
   update(
@@ -67,6 +77,7 @@ export class ProductsController {
     );
   }
 
+  // DELETE PRODUCT
   @Delete(':id')
 
   remove(
