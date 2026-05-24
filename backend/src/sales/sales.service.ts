@@ -70,8 +70,14 @@ export class SalesService {
 
           total,
 
-          businessId:
-            createSaleDto.businessId,
+          business: {
+
+            connect: {
+
+              id:
+                createSaleDto.businessId,
+            },
+          },
 
           cashier: {
 
