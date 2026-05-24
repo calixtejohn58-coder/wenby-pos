@@ -9,29 +9,32 @@ datasource db {
 }
 
 enum Role {
+  SUPER_ADMIN
   ADMIN
   CASHIER
 }
 
 model Business {
 
-  id        String   @id @default(cuid())
+  id          String    @id @default(cuid())
 
-  name      String
+  name        String
 
-  email     String?
+  email       String?
 
-  phone     String?
+  phone       String?
 
-  address   String?
+  address     String?
 
-  users     User[]
+  isActive    Boolean   @default(true)
 
-  products  Product[]
+  users       User[]
 
-  sales     Sale[]
+  products    Product[]
 
-  createdAt DateTime @default(now())
+  sales       Sale[]
+
+  createdAt   DateTime  @default(now())
 }
 
 model User {

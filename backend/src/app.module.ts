@@ -24,9 +24,15 @@ from './sales/sales.module';
 import { UsersController }
 from './users/users.controller';
 
+import { BusinessesModule }
+from './businesses/businesses.module';
+
 @Module({
+
   imports: [
+
     ConfigModule.forRoot({
+
       isGlobal: true,
     }),
 
@@ -37,13 +43,20 @@ from './users/users.controller';
     ProductsModule,
 
     SalesModule,
+
+    BusinessesModule,
   ],
 
   controllers: [
+
     AppController,
+
     UsersController,
   ],
 
-  providers: [AppService],
+  providers: [
+    AppService,
+  ],
 })
+
 export class AppModule {}
