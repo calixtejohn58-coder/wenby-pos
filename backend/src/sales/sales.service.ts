@@ -12,6 +12,7 @@ export class SalesService {
     private prisma: PrismaService,
   ) {}
 
+  // CREATE SALE
   async create(
     createSaleDto: any,
   ) {
@@ -70,14 +71,8 @@ export class SalesService {
 
           total,
 
-          business: {
-
-            connect: {
-
-              id:
-                createSaleDto.businessId,
-            },
-          },
+          businessId:
+            createSaleDto.businessId,
 
           cashier: {
 
@@ -90,7 +85,7 @@ export class SalesService {
         },
       });
 
-    // CREATE ITEMS
+    // CREATE SALE ITEMS
     for (const item of items) {
 
       const product =
@@ -142,6 +137,7 @@ export class SalesService {
     return sale;
   }
 
+  // GET SALES
   async findAll(
     businessId: string,
   ) {
