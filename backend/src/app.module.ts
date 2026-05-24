@@ -21,9 +21,6 @@ from './products/products.module';
 import { SalesModule }
 from './sales/sales.module';
 
-import { UsersController }
-from './users/users.controller';
-
 import { BusinessesModule }
 from './businesses/businesses.module';
 
@@ -50,8 +47,6 @@ from './businesses/businesses.module';
   controllers: [
 
     AppController,
-
-    UsersController,
   ],
 
   providers: [
