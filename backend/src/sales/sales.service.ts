@@ -44,9 +44,16 @@ export class SalesService {
         item.quantity;
     }
 
-    // GET FIRST USER
+    // GET CASHIER
     const cashier =
-      await this.prisma.user.findFirst();
+      await this.prisma.user.findFirst({
+
+        where: {
+
+          businessId:
+            createSaleDto.businessId,
+        },
+      });
 
     if (!cashier) {
 
@@ -62,6 +69,9 @@ export class SalesService {
         data: {
 
           total,
+
+          businessId:
+            createSaleDto.businessId,
 
           cashier: {
 
@@ -126,14 +136,23 @@ export class SalesService {
     return sale;
   }
 
-  async findAll() {
+  async findAll(
+    businessId: string,
+  ) {
 
     return this.prisma.sale.findMany({
+
+      where: {
+
+        businessId,
+      },
 
       include: {
 
         items: {
+
           include: {
+
             product: true,
           },
         },
@@ -142,6 +161,7 @@ export class SalesService {
       },
 
       orderBy: {
+
         createdAt:
           'desc',
       },
