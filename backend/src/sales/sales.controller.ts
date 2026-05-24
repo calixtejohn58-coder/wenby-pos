@@ -13,26 +13,31 @@ from './sales.service';
 export class SalesController {
 
   constructor(
-    private readonly salesService: SalesService,
+
+    private readonly salesService:
+      SalesService,
   ) {}
 
+  // CREATE SALE
   @Post()
 
   create(
-
     @Body()
-    createSaleDto: any,
+    body: any,
   ) {
 
     return this.salesService.create(
-      createSaleDto,
+      body,
     );
   }
 
+  // GET SALES
   @Get()
 
   findAll() {
 
-    return this.salesService.findAll();
+    return this.salesService.findAll(
+      '',
+    );
   }
 }
