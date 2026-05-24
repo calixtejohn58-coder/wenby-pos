@@ -38,16 +38,26 @@ export class ProductsService {
 
         barcode:
           data.barcode || '',
+
+        businessId:
+          data.businessId,
       },
     });
   }
 
   // GET PRODUCTS
-  async findAll() {
+  async findAll(
+    businessId: string,
+  ) {
 
     return this.prisma.product.findMany({
 
+      where: {
+        businessId,
+      },
+
       orderBy: {
+
         createdAt:
           'desc',
       },
