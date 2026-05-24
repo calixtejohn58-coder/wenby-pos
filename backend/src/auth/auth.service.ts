@@ -20,25 +20,31 @@ from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+
   constructor(
+
     private prisma:
       PrismaService,
 
     private jwtService:
       JwtService,
+
   ) {}
 
   async register(
     dto: RegisterDto,
   ) {
+
     const userExists =
       await this.prisma.user.findUnique({
+
         where: {
           email: dto.email,
         },
       });
 
     if (userExists) {
+
       throw new BadRequestException(
         'Email already exists',
       );
@@ -50,20 +56,23 @@ export class AuthService {
         10,
       );
 
-    // AUTO ADMIN SYSTEM
-    let role: any =
-      'CASHIER';
+    // CREATE BUSINESS
+    const business =
+      await this.prisma.business.create({
 
-    const userCount =
-      await this.prisma.user.count();
+        data: {
 
-    if (userCount === 0) {
-      role = 'ADMIN';
-    }
+          name:
+            `${dto.fullName} Business`,
+        },
+      });
 
+    // CREATE ADMIN USER
     const user =
       await this.prisma.user.create({
+
         data: {
+
           fullName:
             dto.fullName,
 
@@ -73,7 +82,11 @@ export class AuthService {
           password:
             hashedPassword,
 
-          role,
+          role:
+            'ADMIN',
+
+          businessId:
+            business.id,
         },
       });
 
@@ -83,24 +96,35 @@ export class AuthService {
     } = user;
 
     return {
-      message:
-        'User created successfully',
 
-      user: safeUser,
+      message:
+        'Business created successfully',
+
+      user:
+        safeUser,
+
+      business,
     };
   }
 
   async login(
     dto: LoginDto,
   ) {
+
     const user =
       await this.prisma.user.findUnique({
+
         where: {
           email: dto.email,
+        },
+
+        include: {
+          business: true,
         },
       });
 
     if (!user) {
+
       throw new UnauthorizedException(
         'Invalid credentials',
       );
@@ -108,11 +132,14 @@ export class AuthService {
 
     const passwordMatch =
       await bcrypt.compare(
+
         dto.password,
+
         user.password,
       );
 
     if (!passwordMatch) {
+
       throw new UnauthorizedException(
         'Invalid credentials',
       );
@@ -120,13 +147,18 @@ export class AuthService {
 
     const token =
       await this.jwtService.signAsync({
-        id: user.id,
+
+        id:
+          user.id,
 
         email:
           user.email,
 
         role:
           user.role,
+
+        businessId:
+          user.businessId,
       });
 
     const {
@@ -135,10 +167,12 @@ export class AuthService {
     } = user;
 
     return {
+
       access_token:
         token,
 
-      user: safeUser,
+      user:
+        safeUser,
     };
   }
 }
